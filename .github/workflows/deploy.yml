@@ -36,6 +36,7 @@ jobs:
         env:
           VITE_GITHUB_CLIENT_ID: ${{ secrets.VITE_GITHUB_CLIENT_ID }}
           VITE_GITHUB_REDIRECT_URI: ${{ secrets.VITE_GITHUB_REDIRECT_URI }}
+          VITE_VERCEL_API_URL: ${{ secrets.VITE_VERCEL_API_URL }}
 
       - name: Copy index.html to 404.html for GitHub Pages SPA routing
         run: |
