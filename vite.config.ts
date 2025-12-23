@@ -7,6 +7,7 @@ export default defineConfig({
   base: '/GithubWrapped/',
   build: {
     outDir: 'dist',
+    chunkSizeWarningLimit: 1000, // Augmenter la limite à 1000 KB pour ce projet
   },
 })
 

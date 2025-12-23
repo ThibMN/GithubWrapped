@@ -35,12 +35,15 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { code, state } = req.body;
+  const { code, state: _state } = req.body;
 
   // Vérifier les paramètres requis
   if (!code) {
     return res.status(400).json({ error: 'Missing code parameter' });
   }
+
+  // Note: Le state est validé côté frontend pour la protection CSRF
+  // On le reçoit ici mais la validation est déjà faite avant l'appel à cette fonction
 
   const clientId = process.env.VITE_GITHUB_CLIENT_ID;
   const clientSecret = process.env.GITHUB_CLIENT_SECRET;
