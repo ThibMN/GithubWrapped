@@ -11,6 +11,7 @@ import { ErrorBoundary } from './components/Layout/ErrorBoundary';
 import { BackgroundDecoration } from './components/Layout/BackgroundDecoration';
 import { Footer } from './components/Layout/Footer';
 import { RateLimitWarning } from './components/Layout/RateLimitWarning';
+import { SourceButton } from './components/Layout/SourceButton';
 import { useGitHubStats } from './hooks/useGitHubStats';
 import { useGitHubAuth } from './hooks/useGitHubAuth';
 import { getCurrentYear } from './utils/dateUtils';
@@ -114,6 +115,11 @@ const AppContent: React.FC = () => {
     <div className="min-h-screen bg-wrapped-bg relative">
       {/* Décorations de fond */}
       <BackgroundDecoration />
+      
+      {/* Bouton source en haut à droite (desktop/tablette uniquement) */}
+      <div className="hidden md:block fixed top-4 right-4 z-50">
+        <SourceButton className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-black/10 hover:bg-white transition-colors" />
+      </div>
       
       {/* Page principale sobre */}
       <div className="min-h-screen flex flex-col px-4 py-12 relative z-10">

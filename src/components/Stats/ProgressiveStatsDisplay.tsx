@@ -4,6 +4,7 @@ import { YearlyStats } from '../../types/github';
 import { StatsSlide } from './StatsSlide';
 import { BackgroundDecoration } from '../Layout/BackgroundDecoration';
 import { Footer } from '../Layout/Footer';
+import { SourceButton } from '../Layout/SourceButton';
 import { CodeLinesChart } from './CodeLinesChart';
 import { LanguagesChart } from './LanguagesChart';
 import { YearlyStats as YearlyStatsComponent } from './YearlyStats';
@@ -263,6 +264,12 @@ export const ProgressiveStatsDisplay: React.FC<ProgressiveStatsDisplayProps> = (
   return (
     <div className="fixed inset-0 bg-wrapped-bg z-40 overflow-hidden">
       <BackgroundDecoration />
+      
+      {/* Bouton source en haut à droite (desktop/tablette uniquement) */}
+      <div className="hidden md:block fixed top-4 right-4 z-50">
+        <SourceButton className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-black/10 hover:bg-white transition-colors" />
+      </div>
+      
       <div className="relative z-10 h-full overflow-y-auto flex flex-col">
         <AnimatePresence mode="wait">
           {currentSlideContent && (

@@ -4,6 +4,7 @@ import { OAuthButton } from './OAuthButton';
 import { Spinner } from '../Loading/Spinner';
 import { BackgroundDecoration } from '../Layout/BackgroundDecoration';
 import { Footer } from '../Layout/Footer';
+import { SourceButton } from '../Layout/SourceButton';
 
 export const AuthSelector: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -33,6 +34,12 @@ export const AuthSelector: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-wrapped-bg px-4 relative">
       <BackgroundDecoration />
+      
+      {/* Bouton source en haut à droite (desktop/tablette uniquement) */}
+      <div className="hidden md:block fixed top-4 right-4 z-50">
+        <SourceButton className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-black/10 hover:bg-white transition-colors" />
+      </div>
+      
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-2xl mx-auto relative z-10">
         <div className="w-full flex justify-center px-4">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-4 text-wrapped-text leading-tight inline-block">

@@ -18,6 +18,17 @@ export const Footer: React.FC = () => {
         <p className="mt-2 text-wrapped-muted text-xs">
           Créé avec <span className="text-red-500">❤</span> pour les développeurs
         </p>
+        {/* Lien source sur mobile uniquement */}
+        <p className="mt-2 md:hidden">
+          <a
+            href="https://github.com/ThibMN/GithubWrapped"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-wrapped-muted text-xs hover:text-wrapped-text transition-colors underline decoration-1 underline-offset-2"
+          >
+            Source
+          </a>
+        </p>
       </div>
     </footer>
   );
