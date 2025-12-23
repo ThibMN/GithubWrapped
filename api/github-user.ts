@@ -10,10 +10,27 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
  * Method: GET
  * Headers: { Authorization: 'Bearer <token>' }
  */
+
+// Headers CORS pour autoriser les requêtes depuis GitHub Pages
+const setCorsHeaders = (res: VercelResponse) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://thibmn.github.io');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  res.setHeader('Access-Control-Max-Age', '86400');
+};
+
 export default async function handler(
   req: VercelRequest,
   res: VercelResponse
 ) {
+  // Définir les headers CORS pour toutes les réponses
+  setCorsHeaders(res);
+
+  // Gérer les requêtes OPTIONS (preflight CORS)
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   // Seulement accepter les requêtes GET
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
