@@ -230,6 +230,21 @@ export const getAllUserCommits = async (
     }
   }
 
-  return allCommits;
+  // Dédupliquer les commits par SHA pour éviter de compter plusieurs fois les mêmes commits
+  // (peut arriver avec des forks, merges, etc.)
+  const commitMap = new Map<string, Commit>();
+  allCommits.forEach(commit => {
+    const existingCommit = commitMap.get(commit.sha);
+    // Garder le commit avec les stats les plus complètes, ou le plus récent si égalité
+    if (!existingCommit || 
+        (!existingCommit.stats && commit.stats) ||
+        (existingCommit.stats && commit.stats && 
+         (commit.stats.total > existingCommit.stats.total || 
+          (!commit.stats.total && !existingCommit.stats.total && commit.commit.author.date > existingCommit.commit.author.date)))) {
+      commitMap.set(commit.sha, commit);
+    }
+  });
+
+  return Array.from(commitMap.values());
 };
 
