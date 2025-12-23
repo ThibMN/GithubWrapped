@@ -107,7 +107,8 @@ export const calculateYearlyStats = (
     }
   });
 
-  const totalRepos = Object.keys(languageCounts).length;
+  // Compter le nombre total de repos (pas le nombre de langages uniques)
+  const totalRepos = repositories.filter(repo => repo.language).length;
   const topLanguages = Object.entries(languageCounts)
     .map(([name, count]) => ({
       name,

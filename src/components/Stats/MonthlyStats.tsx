@@ -9,11 +9,14 @@ interface MonthlyStatsProps {
 }
 
 export const MonthlyStats: React.FC<MonthlyStatsProps> = ({ stats }) => {
+  // Calculer le total des repos (somme de tous les comptes de langages)
+  const totalRepos = Object.values(stats.languages).reduce((sum, count) => sum + count, 0);
+  
   const languages = Object.entries(stats.languages).map(([name, count]) => ({
     name,
     value: count,
     count,
-    percentage: 0,
+    percentage: totalRepos > 0 ? (count / totalRepos) * 100 : 0,
   }));
 
   return (
