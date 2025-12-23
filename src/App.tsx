@@ -12,6 +12,7 @@ import { BackgroundDecoration } from './components/Layout/BackgroundDecoration';
 import { Footer } from './components/Layout/Footer';
 import { RateLimitWarning } from './components/Layout/RateLimitWarning';
 import { useGitHubStats } from './hooks/useGitHubStats';
+import { useGitHubAuth } from './hooks/useGitHubAuth';
 import { getCurrentYear } from './utils/dateUtils';
 import { RateLimitError } from './utils/rateLimitHandler';
 import { YearlyStats } from './types/github';
@@ -223,24 +224,51 @@ const App: React.FC = () => {
 };
 
 const AuthCallback: React.FC = () => {
+  const { handleOAuthCallback } = useGitHubAuth();
+  const [error, setError] = React.useState<string | null>(null);
+
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     const state = params.get('state');
 
     if (code && state) {
-      // Dans une vraie application, vous feriez un appel à votre backend
-      // pour échanger le code contre un token
-      // Pour l'instant, on redirige vers la page principale
-      window.location.href = '/GithubWrapped/';
+      // Appeler le handler OAuth qui va échanger le code contre un token
+      handleOAuthCallback(code, state)
+        .then(() => {
+          // Rediriger vers la page principale après succès
+          window.location.href = '/GithubWrapped/';
+        })
+        .catch((err) => {
+          const errorMessage = err instanceof Error ? err.message : 'Erreur lors de l\'authentification';
+          setError(errorMessage);
+          // Rediriger après 3 secondes même en cas d'erreur
+          setTimeout(() => {
+            window.location.href = '/GithubWrapped/';
+          }, 3000);
+        });
     } else {
+      // Pas de code/state, rediriger immédiatement
       window.location.href = '/GithubWrapped/';
     }
-  }, []);
+  }, [handleOAuthCallback]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center terminal-bg">
-      <div className="text-terminal-green">Traitement de l'authentification...</div>
+    <div className="min-h-screen flex items-center justify-center bg-wrapped-bg">
+      <div className="text-center">
+        {error ? (
+          <>
+            <div className="text-red-600 mb-4">Erreur d'authentification</div>
+            <div className="text-wrapped-muted text-sm">{error}</div>
+            <div className="text-wrapped-muted text-xs mt-2">Redirection en cours...</div>
+          </>
+        ) : (
+          <>
+            <div className="text-wrapped-text mb-4">Traitement de l'authentification...</div>
+            <div className="w-8 h-8 border-4 border-wrapped-text border-t-transparent rounded-full animate-spin mx-auto"></div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

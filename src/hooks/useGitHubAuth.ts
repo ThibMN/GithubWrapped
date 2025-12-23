@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { getUser } from '../services/githubApi';
-import { getGitHubOAuthUrl } from '../services/authService';
+import { getGitHubOAuthUrl, storeAccessToken, validateOAuthCallback } from '../services/authService';
+import { exchangeCodeForToken } from '../services/oauthApi';
 import { useAuth } from '../context/AuthContext';
 
 export const useGitHubAuth = () => {
@@ -30,22 +31,28 @@ export const useGitHubAuth = () => {
     }
   }, [setUser, setUsername]);
 
-  const handleOAuthCallback = useCallback(async (_code: string, _state: string) => {
+  const handleOAuthCallback = useCallback(async (code: string, state: string) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Dans une vraie application, vous feriez un appel à votre backend
-      // pour échanger le code contre un token. Pour GitHub Pages, on peut
-      // utiliser un service proxy ou demander à l'utilisateur de créer un token personnel.
-      // Pour l'instant, on simule la récupération du token.
+      // Valider le state OAuth pour prévenir les attaques CSRF
+      if (!validateOAuthCallback(code, state)) {
+        throw new Error('Invalid OAuth state. Please try again.');
+      }
+
+      // Échanger le code contre un token d'accès via le backend Vercel
+      const accessToken = await exchangeCodeForToken(code, state);
       
-      // Note: GitHub OAuth nécessite un backend pour échanger le code contre un token
-      // car le client_secret ne doit pas être exposé. Pour GitHub Pages, on peut:
-      // 1. Utiliser un service proxy (comme Vercel serverless function)
-      // 2. Demander à l'utilisateur de créer un Personal Access Token
-      
-      throw new Error('OAuth callback nécessite un backend. Utilisez un Personal Access Token ou configurez un proxy.');
+      // Stocker le token
+      storeAccessToken(accessToken);
+
+      // Récupérer les informations utilisateur
+      // Le token est maintenant stocké, getUser() l'utilisera automatiquement
+      const user = await getUser(undefined);
+
+      setUser(user);
+      setUsername(user.login);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la connexion OAuth';
       setError(errorMessage);
@@ -53,7 +60,7 @@ export const useGitHubAuth = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [setUser, setUsername]);
 
   return {
     loginWithOAuth,
