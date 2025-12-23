@@ -7,6 +7,9 @@ import { Footer } from '../Layout/Footer';
 import { SourceButton } from '../Layout/SourceButton';
 import { CodeLinesChart } from './CodeLinesChart';
 import { LanguagesChart } from './LanguagesChart';
+import { ContributionHeatmapChart } from './ContributionHeatmapChart';
+import { HourlyDistributionChart } from './HourlyDistributionChart';
+import { WeeklyDistributionChart } from './WeeklyDistributionChart';
 import { YearlyStats as YearlyStatsComponent } from './YearlyStats';
 
 interface ProgressiveStatsDisplayProps {
@@ -39,6 +42,21 @@ export const ProgressiveStatsDisplay: React.FC<ProgressiveStatsDisplayProps> = (
     if (partialStats.activeDays !== undefined) {
       s.push('activeDays');
     }
+    if (partialStats.timeStats?.longestStreak !== undefined && partialStats.timeStats.longestStreak > 0) {
+      s.push('streak');
+    }
+    if (partialStats.timeStats?.mostActiveHour !== undefined) {
+      s.push('activeHour');
+    }
+    if (partialStats.codeQualityStats?.averageCommitSize !== undefined) {
+      s.push('commitSize');
+    }
+    if (partialStats.contributionStats?.openSourceContributions !== undefined) {
+      s.push('openSource');
+    }
+    if (partialStats.funStats?.topEmojis && partialStats.funStats.topEmojis.length > 0) {
+      s.push('emojis');
+    }
     if (partialStats.topLanguages && partialStats.topLanguages.length > 0) {
       s.push('languages');
     }
@@ -47,6 +65,15 @@ export const ProgressiveStatsDisplay: React.FC<ProgressiveStatsDisplayProps> = (
     }
     if (partialStats.monthlyStats && partialStats.monthlyStats.length > 0) {
       s.push('chart');
+    }
+    if (partialStats.contributionHeatmap && partialStats.contributionHeatmap.length > 0) {
+      s.push('heatmap');
+    }
+    if (partialStats.hourlyDistribution && partialStats.hourlyDistribution.length > 0) {
+      s.push('hourlyChart');
+    }
+    if (partialStats.weeklyDistribution && partialStats.weeklyDistribution.length > 0) {
+      s.push('weeklyChart');
     }
     if (partialStats.totalPullRequests !== undefined || partialStats.totalIssues !== undefined) {
       s.push('prsIssues');
@@ -176,6 +203,149 @@ export const ProgressiveStatsDisplay: React.FC<ProgressiveStatsDisplayProps> = (
                 Tu as été actif {Math.round((partialStats.activeDays / 365) * 100)}% de l'année
               </p>
             </div>
+          </StatsSlide>
+        );
+
+      case 'streak':
+        if (!partialStats.timeStats || partialStats.timeStats.longestStreak === undefined) return null;
+        return (
+          <StatsSlide 
+            title="Streak le plus long"
+            delay={0}
+          >
+            <div className="text-center">
+              <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-wrapped-text mb-6 sm:mb-8">
+                {partialStats.timeStats.longestStreak}
+              </div>
+              <p className="text-base sm:text-lg md:text-xl text-wrapped-muted px-4">
+                {partialStats.timeStats.longestStreak > 30 
+                  ? 'Un vrai machine ! 🔥' 
+                  : partialStats.timeStats.longestStreak > 14
+                  ? 'Consistance au rendez-vous ! 💪'
+                  : 'Bonne régularité ! ⚡'}
+              </p>
+            </div>
+          </StatsSlide>
+        );
+
+      case 'activeHour':
+        if (!partialStats.timeStats || partialStats.timeStats.mostActiveHour === undefined) return null;
+        const hour = partialStats.timeStats.mostActiveHour;
+        return (
+          <StatsSlide 
+            title="Heure la plus active"
+            delay={0}
+          >
+            <div className="text-center">
+              <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-wrapped-text mb-6 sm:mb-8">
+                {hour}h
+              </div>
+              <p className="text-base sm:text-lg md:text-xl text-wrapped-muted px-4">
+                {hour >= 22 || hour < 6 
+                  ? 'Oiseau de nuit ! 🦉'
+                  : hour >= 6 && hour < 12
+                  ? 'Early bird ! 🌅'
+                  : hour >= 12 && hour < 14
+                  ? 'Productif même le midi ! ☀️'
+                  : 'Après-midi studieux ! 💼'}
+              </p>
+            </div>
+          </StatsSlide>
+        );
+
+      case 'commitSize':
+        if (!partialStats.codeQualityStats || partialStats.codeQualityStats.averageCommitSize === undefined) return null;
+        const avgSize = Math.round(partialStats.codeQualityStats.averageCommitSize);
+        return (
+          <StatsSlide 
+            title="Taille moyenne des commits"
+            delay={0}
+          >
+            <div className="text-center">
+              <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-wrapped-text mb-6 sm:mb-8">
+                {avgSize}
+              </div>
+              <p className="text-base sm:text-lg md:text-xl text-wrapped-muted px-4">
+                {avgSize > 500 
+                  ? 'Commits conséquents ! 📦'
+                  : avgSize > 100
+                  ? 'Bons commits bien dimensionnés ! ✨'
+                  : 'Commits atomiques, parfait ! 🎯'}
+              </p>
+            </div>
+          </StatsSlide>
+        );
+
+      case 'openSource':
+        if (!partialStats.contributionStats || partialStats.contributionStats.openSourceContributions === undefined) return null;
+        return (
+          <StatsSlide 
+            title="Contributions open-source"
+            delay={0}
+          >
+            <div className="text-center">
+              <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-wrapped-text mb-6 sm:mb-8">
+                {partialStats.contributionStats.openSourceContributions}
+              </div>
+              <p className="text-base sm:text-lg md:text-xl text-wrapped-muted px-4">
+                {partialStats.contributionStats.openSourceContributions > 0
+                  ? 'Merci pour tes contributions à l\'open-source ! 🌟'
+                  : 'Contribue à l\'open-source, c\'est génial ! 🚀'}
+              </p>
+            </div>
+          </StatsSlide>
+        );
+
+      case 'emojis':
+        if (!partialStats.funStats?.topEmojis || partialStats.funStats.topEmojis.length === 0) return null;
+        return (
+          <StatsSlide 
+            title="Tes emojis préférés"
+            delay={0}
+          >
+            <div className="text-center">
+              <div className="flex justify-center items-center gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 flex-wrap">
+                {partialStats.funStats.topEmojis.slice(0, 5).map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="text-center"
+                  >
+                    <div className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-2">{item.emoji}</div>
+                    <div className="text-sm sm:text-base text-wrapped-muted">{item.count}x</div>
+                  </motion.div>
+                ))}
+              </div>
+              <p className="text-base sm:text-lg md:text-xl text-wrapped-muted px-4">
+                Un développeur expressif ! 😄
+              </p>
+            </div>
+          </StatsSlide>
+        );
+
+      case 'heatmap':
+        if (!partialStats.contributionHeatmap || partialStats.contributionHeatmap.length === 0 || !partialStats.year) return null;
+        return (
+          <StatsSlide title="Carte de contributions" delay={0}>
+            <ContributionHeatmapChart heatmap={partialStats.contributionHeatmap} year={partialStats.year} />
+          </StatsSlide>
+        );
+
+      case 'hourlyChart':
+        if (!partialStats.hourlyDistribution || partialStats.hourlyDistribution.length === 0) return null;
+        return (
+          <StatsSlide title="Répartition horaire" delay={0}>
+            <HourlyDistributionChart data={partialStats.hourlyDistribution} />
+          </StatsSlide>
+        );
+
+      case 'weeklyChart':
+        if (!partialStats.weeklyDistribution || partialStats.weeklyDistribution.length === 0) return null;
+        return (
+          <StatsSlide title="Répartition hebdomadaire" delay={0}>
+            <WeeklyDistributionChart data={partialStats.weeklyDistribution} />
           </StatsSlide>
         );
 

@@ -106,6 +106,43 @@ export interface MonthlyStats {
   activeDays: number;
 }
 
+export interface TimeStats {
+  mostActiveHour: number; // 0-23
+  mostActiveDayOfWeek: number; // 0-6 (0 = dimanche, 6 = samedi)
+  longestStreak: number; // Nombre de jours consécutifs
+  averageTimeBetweenCommits: number; // En heures
+}
+
+export interface CodeQualityStats {
+  averageCommitSize: number; // Lignes de code par commit
+  additionDeletionRatio: number; // additions / deletions
+  totalFilesModified: number;
+  topFileExtensions: Array<{ extension: string; count: number; percentage: number }>;
+}
+
+export interface ContributionStats {
+  topStarredRepos: Array<{ name: string; stars: number }>;
+  openSourceContributions: number; // Contributions à des repos qui ne sont pas à l'utilisateur
+  ownReposContributions: number;
+  prMergeRate: number; // Pourcentage
+  averageIssueResolutionTime: number; // En heures
+  newReposCreated: number;
+}
+
+export interface FunStats {
+  longestCommitMessage: string;
+  shortestCommitMessage: string;
+  averageCommitMessageLength: number;
+  topEmojis: Array<{ emoji: string; count: number }>;
+  topCommitKeywords: Array<{ keyword: string; count: number }>;
+}
+
+export interface ContributionHeatmapDay {
+  date: string; // Format YYYY-MM-DD
+  count: number;
+  level: number; // 0-4 pour l'intensité de couleur
+}
+
 export interface YearlyStats {
   year: number;
   totalCommits: number;
@@ -120,6 +157,14 @@ export interface YearlyStats {
   monthlyStats: MonthlyStats[];
   mostActiveMonth: number;
   activeDays: number;
+  // Nouvelles statistiques
+  timeStats: TimeStats;
+  codeQualityStats: CodeQualityStats;
+  contributionStats: ContributionStats;
+  funStats: FunStats;
+  contributionHeatmap: ContributionHeatmapDay[];
+  hourlyDistribution: Array<{ hour: number; count: number }>; // 0-23
+  weeklyDistribution: Array<{ dayOfWeek: number; count: number }>; // 0-6
 }
 
 export interface ContributionDay {
