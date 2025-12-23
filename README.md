@@ -111,57 +111,31 @@ L'application sera accessible sur `http://localhost:5173/GithubWrapped`
 
 ## 🔐 Configuration OAuth GitHub
 
-Pour activer l'authentification OAuth (recommandé pour un usage optimal) :
+Le projet inclut un **backend Vercel** prêt à être déployé pour gérer l'authentification OAuth de manière sécurisée.
 
-### ⚠️ Important : OAuth nécessite un backend
+### 📚 Guides de déploiement
 
-L'implémentation actuelle de l'OAuth nécessite un **backend sécurisé** pour échanger le code d'autorisation contre un token d'accès, car le `client_secret` ne doit jamais être exposé côté client.
+- **🚀 [GUIDE_DEPLOIEMENT_VERCEL.md](GUIDE_DEPLOIEMENT_VERCEL.md)** - Guide complet étape par étape (RECOMMANDÉ)
+- **⚡ [QUICK_START_OAUTH.md](QUICK_START_OAUTH.md)** - Guide rapide en 5 minutes
 
-### Option 1 : Configuration de base (Développement)
+### 🔑 Résumé rapide
 
-#### 1. Créer une OAuth App GitHub
+1. **Créer une OAuth App GitHub** (voir guide détaillé)
+2. **Déployer sur Vercel** : Le dossier `api/` contient les fonctions serverless
+3. **Configurer les variables d'environnement** sur Vercel et GitHub Secrets
+4. **C'est tout !** Le flux OAuth fonctionnera automatiquement
 
-1. Aller sur [GitHub Settings > Developer settings > OAuth Apps](https://github.com/settings/developers)
-2. Cliquer sur **"New OAuth App"**
-3. Remplir les informations :
-   - **Application name** : `GithubWrapped`
-   - **Homepage URL** : `http://localhost:5173/GithubWrapped` (dev) ou `https://votre-username.github.io/GithubWrapped` (prod)
-   - **Authorization callback URL** : `http://localhost:5173/GithubWrapped/auth/callback` (dev) ou `https://votre-username.github.io/GithubWrapped/auth/callback` (prod)
-4. Copier le **Client ID** généré
+### 📋 Variables nécessaires
 
-#### 2. Configurer les variables d'environnement
+**Sur Vercel** :
+- `VITE_GITHUB_CLIENT_ID` : Votre Client ID GitHub
+- `GITHUB_CLIENT_SECRET` : Votre Client Secret (secret, jamais exposé)
+- `VITE_GITHUB_REDIRECT_URI` : URL de callback
 
-**Développement local** : Créer un fichier `.env` :
-```env
-VITE_GITHUB_CLIENT_ID=votre_client_id_github
-VITE_GITHUB_REDIRECT_URI=http://localhost:5173/GithubWrapped/auth/callback
-```
-
-**Production (GitHub Pages)** : Ajouter dans **Settings > Secrets and variables > Actions** :
+**Sur GitHub Secrets** :
 - `VITE_GITHUB_CLIENT_ID` : Votre Client ID
-- `VITE_GITHUB_REDIRECT_URI` : `https://votre-username.github.io/GithubWrapped/auth/callback`
-
-#### 3. Limitation actuelle
-
-Actuellement, le bouton OAuth redirige vers GitHub pour l'autorisation, mais l'échange du code contre un token n'est pas implémenté côté frontend (pour des raisons de sécurité). 
-
-**Solutions possibles** :
-
-1. **Utiliser un Personal Access Token** (pour tests) :
-   - Créer un token sur [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
-   - Scopes : `repo`, `read:user`, `read:org`
-   - Stocker manuellement dans le sessionStorage (nécessite modification du code)
-
-2. **Configurer un backend/serverless** (recommandé pour production) :
-   - Voir le guide complet dans [`docs/OAUTH_SETUP.md`](docs/OAUTH_SETUP.md)
-   - Exemples pour Vercel Functions et Netlify Functions inclus
-
-### Option 2 : Solution complète avec backend
-
-Consultez le guide détaillé dans [`docs/OAUTH_SETUP.md`](docs/OAUTH_SETUP.md) pour :
-- Implémentation complète avec Vercel/Netlify Functions
-- Modification du code frontend pour utiliser le backend
-- Sécurité et bonnes pratiques
+- `VITE_GITHUB_REDIRECT_URI` : URL de callback
+- `VITE_VERCEL_API_URL` : URL de votre déploiement Vercel
 
 ## 🚢 Déploiement sur GitHub Pages
 
